@@ -1,0 +1,91 @@
+@startuml
+title Discrete Fracture Network
+
+package DFN <<Folder>>
+{
+
+class Fracture{
++FractureId : unsigned int
++num_traces : unsigned int
++Vertices : vector<array<double,3>>
++Baricenter : array<double,3>
++NormalVector : array<double,3>
++Radius : double
++Traces : vector<unsigned int>
++ mesh : PolygonalMesh
+bool Exclude2(Fracture & f1, Fracture & f2)
+bool get_baricenter() 
+bool find_trace(Fracture & f1, Fracture & f2, DFN & dfn)
+PolygonalMesh importMesh(Fracture& fracture) 
+}
+
+class Trace{
++TraceId : unsigned int
++Coordinates : array<array<double,3>,2>
++AssociatedFractures : array<pair<unsigned int,bool>
++TraceLength : double
+}
+
+class PolygonalMesh{
++numCell0D : unsigned int
++Cell0DId : vector<unsigned int>
++Cell0DCoordinates : vector<array<double,3>>
+
++numCell1D : unsigned int
++Cell1DId : vector<unsigned int>
++boundaryCell0DId : vector<array<double,3>>
+
++numCell2D : unsigned int
++Cell2DVerticesId : vector<vector<unsigned int>>
++Cell2DEdgesId : vector<vector<unsigned int>>
+}
+
+class DFN{
++FracturesNumber : unsigned int
++FracturesId : vector<unsigned int>
++NumberVertices : vector<unsigned int>
++MatricesVertices : vector<vector<vector<double>>>
++number_fractures : unsigned int
++number_traces : unsigned int
+
++Fractures : vector<Fracture>
++Traces : vector<Traces>
+
+bool ImportDFN(const string& filename,DFN& dfn)
+bool run_Alg(DFN & dfn)
+
+.. TEST ..
+TEST(FINDTRACE, FR3_data)
+TEST(FINDTRACE, VerticesOnTrace)
+TEST(FINDTRACE, VerticesOnTraceCoplanar)
+TEST(FINDTRACE, hexagons)
+TEST(EXCLUDE2, FR10_data)
+}
+
+class Functions<<(F, #FF7700) >>{
+vector<Trace> SortAssociatedTraces(vector<Trace>& v)
+cutTrace(pair<Fracture,vector<Trace>> coppia)
+PolygonalMesh processFracture(DFN& dfn, Fracture& fracture)
+vector<PolygonalMesh> Alg_process_cut(DFN& dfn)
+
+}
+
+PolygonalMesh ..> Fracture
+Fracture ..> DFN
+Trace ..> DFN
+PolygonalMesh --> Functions
+Trace --> Functions
+Fracture --> Functions
+DFN --> Functions
+
+}
+
+package Gedim <<Frame>>
+{
+
+}
+
+Gedim ..> DFN
+note "This is an external library" as GedimNote
+GedimNote .. Gedim
+@enduml
